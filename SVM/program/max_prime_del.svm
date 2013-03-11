@@ -1,0 +1,26 @@
+	inp
+	dup
+	ldc 2
+	cmp
+	ldc 1
+	sub
+	 br two
+	ldc 2
+	div
+	 st 0
+	ldc 1
+	 st 1
+	
+
+
+
+
+
+
+
+
+
+
+two:
+	ldc 2
+	hlt

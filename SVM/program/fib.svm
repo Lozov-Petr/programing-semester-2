@@ -1,0 +1,34 @@
+ inp
+  st 0
+ ldc 1
+ dup
+  st 1
+odd:
+cicle:
+  ld 1
+ swp
+ dup
+  st 1
+ add
+ dup
+  ld 0
+ cmp
+ ldc 1
+ cmp
+ ldc 1
+ add
+  br exit
+ dup
+ ldc 2
+ mod
+  br odd
+ dup
+  ld 2
+ add
+  st 2
+ jmp cicle
+exit:
+  ld 2
+ hlt
+ 
+ 

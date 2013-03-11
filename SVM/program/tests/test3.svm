@@ -1,0 +1,4 @@
+return:
+ ldc -1
+ jmp return
+ hlt

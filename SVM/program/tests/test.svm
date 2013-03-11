@@ -1,0 +1,94 @@
+ ldc  1
+  st  2949672960
+ ldc  2
+  st  100000000
+ ldc  3
+  st  1000000000  
+ ldc  4
+  st  2000000000
+ ldc  5
+  st  3000000000
+ ldc  6
+  st  4000000000
+ ldc  7
+  st  4294967295
+ ldc  8
+  st  1
+ ldc  9
+  st  294967296
+ ldc  10
+  st  500000000
+ ldc  11
+  st  300000000
+ ldc  12
+  st  1500000000
+ ldc  13
+  st  2500000000
+ ldc  14
+  st  3500000000
+ ldc  15
+  st  40000000
+  ld  2949672960
+  ld  100000000
+ add
+  ld  1000000000
+ add
+  ld  2000000000
+ add
+  ld  3000000000
+ add
+  ld  4000000000
+ add
+  ld  4294967295
+ add
+  ld  1
+ add
+  ld  294967296
+ add
+  ld  500000000
+ add
+  ld  300000000
+ add
+  ld  1500000000
+ add
+  ld  2500000000
+ add
+  ld  3500000000
+ add
+  ld  40000000
+ add
+a0:
+ jmp  a20
+a1:
+ jmp  a19
+a2:
+ div
+ jmp  a18
+a3:
+a4:
+a5:
+a6:
+a7:
+a8:
+ mul
+a9:
+a10:
+a11:
+a12:
+a13:
+a14:
+jmp  a21
+a15:
+a16:
+a17:
+jmp  a0 
+a18:
+dup
+jmp  a3
+a19:
+jmp  a2
+a20:
+ldc 10
+jmp  a1
+a21:
+ hlt

@@ -1,0 +1,11 @@
+inp
+dup
+ldc 0
+cmp
+ldc 1
+add
+br label1
+ldc -1
+mul
+label1:
+hlt

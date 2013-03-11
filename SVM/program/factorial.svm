@@ -1,0 +1,19 @@
+ inp
+  st 0
+ ldc 1
+  st 1
+cycle:
+  ld 0
+  ld 1
+ mul
+  st 1
+  ld 0
+ ldc 1
+ sub
+ dup
+  st 0
+ ldc 1
+ cmp
+  br cycle
+  ld 1
+ hlt

@@ -1,0 +1,12 @@
+ ldc 0
+return:
+ dup
+ ldc -1
+ swp
+ sti
+ ldc 8192
+ add
+ dup
+  br return
+ ldc -1
+ hlt
