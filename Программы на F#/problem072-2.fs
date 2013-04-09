@@ -50,7 +50,7 @@ let quantity_of_partial_fractions denominator =
             i <- i + 1
         i
 
-    (* Возвращает следующее сочитание послле combination, в случае, если combination - максимальное сочетание, возвращает [| 0 |] *)
+    (* Возвращает следующее сочитание послле combination, в случае, если combination - максимальное сочетание, возвращает [| 0 .. n - 1 |] *)
     let rec next_combination (combination : int array) point number =
         let mutable combination' = combination
         if combination'.[point] < number then 
