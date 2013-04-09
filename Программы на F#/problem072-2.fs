@@ -1,15 +1,15 @@
  (******************************
-           Лозов Пётр
-           Группа 171
+           Р›РѕР·РѕРІ РџС‘С‚СЂ
+           Р“СЂСѓРїРїР° 171
             09.04.13
            Problem 72 
-      Counting fractions №2
- Время выполнения - 36.28 секунд
+      Counting fractions в„–2
+ Р’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ - 36.28 СЃРµРєСѓРЅРґ
  *******************************)
 
 let d = 1000000
 
-(* Возвращает массив простых чисел <= number *)
+(* Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РїСЂРѕСЃС‚С‹С… С‡РёСЃРµР» <= number *)
 let create_array_prime number =
     let array_prime : int array = Array.zeroCreate (number / 2 + 2)
     let array_bool = Array.create number true
@@ -23,10 +23,10 @@ let create_array_prime number =
     array_prime   
     
 let array_prime = d |> float |> sqrt |> int |> create_array_prime
-(* Возвращает количество правильных дробей при фиксированном знаменателе = denominator *)
+(* Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂР°РІРёР»СЊРЅС‹С… РґСЂРѕР±РµР№ РїСЂРё С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРј Р·РЅР°РјРµРЅР°С‚РµР»Рµ = denominator *)
 let quantity_of_partial_fractions denominator =
    
-    (* Возвращает массив, состоящий из простых множителей, числа number *) 
+    (* Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ, СЃРѕСЃС‚РѕСЏС‰РёР№ РёР· РїСЂРѕСЃС‚С‹С… РјРЅРѕР¶РёС‚РµР»РµР№, С‡РёСЃР»Р° number *) 
     let prime_factors number =
         let array_prime_factors : int array = Array.zeroCreate 10
         let mutable i = 0
@@ -42,7 +42,7 @@ let quantity_of_partial_fractions denominator =
         if number' <> 1 then array_prime_factors.[j] <- number'
         array_prime_factors
    
-    (* Возвращает длину массива array', при условии, что конец массива - это первый нулевой элемент *)
+    (* Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР»РёРЅСѓ РјР°СЃСЃРёРІР° array', РїСЂРё СѓСЃР»РѕРІРёРё, С‡С‚Рѕ РєРѕРЅРµС† РјР°СЃСЃРёРІР° - СЌС‚Рѕ РїРµСЂРІС‹Р№ РЅСѓР»РµРІРѕР№ СЌР»РµРјРµРЅС‚ *)
     let size_array (array' : int array) =
         let mutable i = 1
         let length_array = Array.length array'
@@ -50,7 +50,7 @@ let quantity_of_partial_fractions denominator =
             i <- i + 1
         i
 
-    (* Возвращает следующее сочитание послле combination, в случае, если combination - максимальное сочетание, возвращает [| 0 |] *)
+    (* Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РµРґСѓСЋС‰РµРµ СЃРѕС‡РёС‚Р°РЅРёРµ РїРѕСЃР»Р»Рµ combination, РІ СЃР»СѓС‡Р°Рµ, РµСЃР»Рё combination - РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЃРѕС‡РµС‚Р°РЅРёРµ, РІРѕР·РІСЂР°С‰Р°РµС‚ [| 0 |] *)
     let rec next_combination (combination : int array) point number =
         let mutable combination' = combination
         if combination'.[point] < number then 
