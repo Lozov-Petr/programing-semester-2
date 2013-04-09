@@ -1,16 +1,14 @@
  (******************************
-           Лозов Пётр
-           Группа 171
+           Р›РѕР·РѕРІ РџС‘С‚СЂ
+           Р“СЂСѓРїРїР° 171
             09.04.13
            Problem 72 
-      Counting fractions №3
- Время выполнения - 0.34 секунды
+      Counting fractions в„–3
+ Р’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ - 0.34 СЃРµРєСѓРЅРґС‹
  *******************************)
-let start = System.DateTime.Now
 let d = 1000000
 let mutable sum = 0L
 let array_fi_number = Array.create (d + 1) 1L
-(* fi - функция Эйлера *)
 for i in 2 .. d do
     if array_fi_number.[i] = 1L then
         for j in i .. i .. d do
@@ -20,4 +18,4 @@ for i in 2 .. d do
                 j' <- j' / (int64 i)
             array_fi_number.[j] <- array_fi_number.[j] * (int64 (i - 1))
     sum <- sum + array_fi_number.[i]
-printfn "%A\n%A" sum (System.DateTime.Now - start)  
+printfn "%A" sum  
