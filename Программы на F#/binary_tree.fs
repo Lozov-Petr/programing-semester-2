@@ -1,7 +1,7 @@
 ﻿ (******************************
            Лозов Пётр
            Группа 171
-            22.04.13
+            23.04.13
          Двоичное дерево
  *******************************)
 
@@ -27,36 +27,35 @@ let rec exist tree elem =
     match tree with
     | Empty -> false
     | Leaf num -> num = elem
-    | Node(num, left, right) when num = elem -> true
-    | Node(num, left, right) when num > elem -> exist left elem
+    | Node(num, left, right) when elem = num -> true
+    | Node(num, left, right) when elem < num -> exist left elem
     | Node(num, left, right) -> exist right elem
 
 let rec delete tree elem =
 
-    (* Если tree = Node(number, Empty, Empty), то заменяме на Leaf number*)
+    (* Если tree = Node(number, Empty, Empty), то заменяем на Leaf number*)
     let node_empty_empty tree =
         match tree with
         | Node(num, left, right) when left = Empty && right = Empty -> Leaf num
         | _ -> tree
 
     match tree with
-    | Empty -> Empty
     | Leaf num when num = elem -> Empty
-    | Leaf num -> Leaf num
-    | Node(num, left, right) when num > elem -> node_empty_empty (Node(num, delete left elem, right))
-    | Node(num, left, right) when num < elem -> node_empty_empty (Node(num, left, delete right elem))
+    | Node(num, left, right) when elem < num -> node_empty_empty (Node(num, delete left elem, right))
+    | Node(num, left, right) when elem > num -> node_empty_empty (Node(num, left, delete right elem))
     | Node(num, left, right) when left = Empty -> delete right elem
-    | Node(num, left, right) when right = Empty -> delete left elem
+    | Node(num, left, right) when right = Empty -> left
     | Node(num, left, right) ->
         
-        let rec min_elem_int_tree tree elem =
+        let rec max_elem_in_tree tree elem =
                 match tree with
-                | Node(num, left, right) -> min_elem_int_tree left num
+                | Node(num, left, right) -> max_elem_in_tree right num
                 | Leaf num -> num
                 | Empty -> elem 
         
-        let min = min_elem_int_tree right num (* Самый левый элемент в правом поддереве *)
-        delete (Node(min, left, delete right min)) elem 
+        let max = max_elem_in_tree left num (* Самый правый элемент в левом поддереве *)
+        delete (Node(max, delete left max, right)) elem 
+    | _ -> tree
 
 
 let rec delete_list tree list =
@@ -78,7 +77,17 @@ let print_tree tree =
     print_tree' tree
     printfn ""
         
-   
-let tree = delete_list (insert_list Empty [2; 0; 4; -1; 1; 3; 5]) [-1; 1; 3; 5]
+let tree = insert_list (Leaf 0) [-4; 4; -6; -2; 2; 6] 
+  
+let test = 
+    (insert (Node(5, Leaf 2, Empty)) 8) = Node(5, Leaf 2, Leaf 8) 
+    && tree = Node(0, Node(-4, Leaf -6, Leaf -2), Node(4, Leaf 2, Leaf 6))
+    && exist tree 2 = true
+    && exist tree 5 = false
+    && delete (insert_list Empty [1; 2; 1; 0; 2; 1]) 1 = Node(0, Empty, Node(2, Empty, Leaf 2))
+    && delete_list tree [0; -4; 4] = Node(-2, Leaf -6, Node(2, Empty, Leaf 6))
+
+
+printfn "test = %A" test
 
 print_tree tree
