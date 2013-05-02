@@ -33,7 +33,7 @@ let rec exist tree elem =
 
 let rec delete tree elem =
 
-    (* Если tree = Node(number, Empty, Empty), то заменяем на Leaf number*)
+    (* Если tree = Node(number, Empty, Empty), то заменяем на Leaf number *)
     let node_empty_empty tree =
         match tree with
         | Node(num, Empty, Empty) -> Leaf num
@@ -63,9 +63,11 @@ let rec delete_list tree list =
     | hd :: tl -> delete_list (delete tree hd) tl
 
 let print_tree tree =
-    
-    let rec print_tree' tree list acc = 
-        
+
+    let rec print_tree' tree list acc which_tree = 
+        (* which_tree = 0  <=>  текущее дерево - начальное *)
+        (* which_tree = -1 <=>  текущее дерево - левое *)
+        (* which_tree = 1  <=>  текущее дерево - правое *)
         let rec print_spaces num =
             match num with
             | 1 -> printf " "
@@ -85,31 +87,36 @@ let print_tree tree =
         match tree with
         | Empty -> printfn ""
         | Leaf num -> 
-            if acc > 0 then printfn "\-(%A)" num 
-            else if acc = 0 || acc < 1 then printfn "-(%A)" num
-            else printfn "(%A)" num
+            match which_tree with
+            | 0 -> printfn "(%A)" num
+            | -1 -> printfn "\-(%A)" num 
+            | 1 -> printfn "-(%A)" num
+            | _ -> ()
         | Node (num, left, right) ->
             let acc' = 
-                if acc > 0 then 
-                    printf "\-(%A)*" num
-                    acc + 4 + String.length (string num)
-                else if acc = 0 || acc < -1 then
-                    printf "-(%A)*" num
-                    3 - acc + String.length (string num)
-                else
+                match which_tree with
+                | 0 -> 
                     printf " (%A)*" num
                     3 + String.length (string num)
+                | -1 ->
+                    printf "\-(%A)*" num
+                    acc + 4 + String.length (string num)
+                | 1 ->
+                    printf "-(%A)*" num
+                    if acc = 0 then 3 + String.length (string num)
+                    else 4 + acc + String.length (string num)
+                | _ -> 0
             if left <> Empty then 
                 let list' = list @ [acc']
-                print_tree' right list' 0
+                print_tree' right list' 0 1
                 print_sticks list'
                 printfn "|"
                 print_sticks list'
-                print_tree' left list acc'
+                print_tree' left list acc' -1
             else
-                 print_tree' right list (-acc' - 1)
+                 print_tree' right list acc' 1
 
-    print_tree' tree [] -1 
+    print_tree' tree [] 0 0
     printfn ""
                                                 
 let tree = insert_list (Leaf 0) [-4; 4; -6; -2; 2; 6] 
