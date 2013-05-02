@@ -5,6 +5,8 @@
          Двоичное дерево
  *******************************)
 
+open System
+
 type BinaryTree<'a> =
     | Empty
     | Leaf of 'a
@@ -85,7 +87,10 @@ let print_tree tree =
             | [] -> ()
 
         match tree with
-        | Empty -> printfn ""
+        | Empty -> 
+            match which_tree with
+            | 0 -> printfn "Empty"
+            | _ -> printfn ""
         | Leaf num -> 
             match which_tree with
             | 0 -> printfn "(%A)" num
@@ -132,13 +137,22 @@ let test =
 
 printfn "test = %A\n" test
 
-let list = List.foldBack (fun x acc -> x @ acc) (List.map (fun x -> [x..2 * x..128]) [64; 32; 16; 8; 4; 2; 1]) []
-let tree' = insert_list Empty list
+let beautiful_tree height = 
 
-open System
-let rand = Random()
-let tree'' = insert_list Empty [for i in [1..50] -> (rand.Next()) % 100]
+    let invol a b = int ((float a) ** (float b))
 
-print_tree tree''
+    let list1 = [for i in [(height - 1)..(-1)..0] -> invol 2 i]
+    let list2 = List.map (fun x -> [x..(2 * x)..(invol 2 height)]) list1
+    let list3 = List.foldBack (fun x acc -> x @ acc) list2 []
+    insert_list Empty list3
+
+let ugly_tree size = 
+    let rand = Random()
+    insert_list Empty [for i in [1..size] -> (rand.Next()) % size] 
+
+let tree' = beautiful_tree 6
+let tree'' = ugly_tree 63
 
 print_tree tree'
+
+print_tree tree''
