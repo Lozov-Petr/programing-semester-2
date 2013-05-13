@@ -1,11 +1,9 @@
  (******************************
            Лозов Пётр
            Группа 171
-            02.05.13
+            13.05.13
          Двоичное дерево
  *******************************)
-
-open System
 
 type BinaryTree<'a> =
     | Empty
@@ -139,16 +137,16 @@ printfn "test = %A\n" test
 
 let beautiful_tree height = 
 
-    let invol a b = int ((float a) ** (float b))
+    let invol_2 a = int (2.0 ** (float a))
 
-    let list1 = [for i in [(height - 1)..(-1)..0] -> invol 2 i]
-    let list2 = List.map (fun x -> [x..(2 * x)..(invol 2 height)]) list1
+    let list1 = [for i in [(height - 1)..(-1)..0] -> invol_2 i]
+    let list2 = List.map (fun x -> [x..(2 * x)..(invol_2 height)]) list1
     let list3 = List.foldBack (fun x acc -> x @ acc) list2 []
     insert_list Empty list3
 
 let ugly_tree size = 
-    let rand = Random()
-    insert_list Empty [for i in [1..size] -> (rand.Next()) % size] 
+    let rand = System.Random()
+    insert_list Empty [for i in [1..size] -> rand.Next(size)]
 
 let tree' = beautiful_tree 6
 let tree'' = ugly_tree 63
