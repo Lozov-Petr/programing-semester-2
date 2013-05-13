@@ -87,11 +87,11 @@ let print_tree tree =
         match tree with
         | Empty -> 
             match which_tree with
-            | 0 -> printfn "Empty"
+            | 0 -> printfn " Empty"
             | _ -> printfn ""
         | Leaf num -> 
             match which_tree with
-            | 0 -> printfn "(%A)" num
+            | 0 -> printfn " (%A)" num
             | -1 -> printfn "\-(%A)" num 
             | 1 -> printfn "-(%A)" num
             | _ -> ()
@@ -135,10 +135,9 @@ let test =
 
 printfn "test = %A\n" test
 
+let invol_2 a = int (2.0 ** (float a))
+
 let beautiful_tree height = 
-
-    let invol_2 a = int (2.0 ** (float a))
-
     let list1 = [for i in [(height - 1)..(-1)..0] -> invol_2 i]
     let list2 = List.map (fun x -> [x..(2 * x)..(invol_2 height)]) list1
     let list3 = List.foldBack (fun x acc -> x @ acc) list2 []
@@ -148,9 +147,7 @@ let ugly_tree size =
     let rand = System.Random()
     insert_list Empty [for i in [1..size] -> rand.Next(size)]
 
-let tree' = beautiful_tree 6
-let tree'' = ugly_tree 63
+let size_tree = 6
 
-print_tree tree'
-
-print_tree tree''
+size_tree |> beautiful_tree |> print_tree
+size_tree |> invol_2 |> (fun x -> x - 1) |> ugly_tree |> print_tree
