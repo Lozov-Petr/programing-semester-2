@@ -1,7 +1,7 @@
  (******************************
            Лозов Пётр
            Группа 171
-            10.05.13
+            20.05.13
          long arithmetic
  *******************************)
 
@@ -39,9 +39,11 @@ type long_number =
         }
 
     new(a : int) =
+        let sign' = a >= 0
+        let a = abs a
         let a' = a / long_number.max_digit
         {
-            sign = a >= 0
+            sign = sign'
             number = (a % long_number.max_digit) :: (if a' <> 0 then [a'] else [])
         }
 
@@ -98,7 +100,9 @@ type long_number =
     static member (-) (a : int, b : long_number) = -(b - a)
         
     static member (+) (a : long_number, b : int) =
-        if a.sign = (b >= 0) then long_number.add(a, b) else long_number.sub(a, -b)
+        if a.sign = (b >= 0) then long_number.add(a, b) 
+        else if a.abs >= (new long_number(b)).abs then long_number.sub(a, -b) else -long_number.sub(new long_number(-b), a)
+
 
     static member (-) (a : long_number, b : int) =
         if a.sign = (b >= 0) then 
@@ -190,8 +194,8 @@ type long_number =
             | [], _ -> acc
             | _ :: tl, [] -> mult tl b.number (n1 + 1) 0 acc
             | hd1 :: tl1, hd2 :: tl2 -> 
-                let slog = new long_number(true, [for i in [1 .. n1 + n2] -> 0] @ (new long_number((int64 hd1) * (int64 hd2))).number)
-                mult list1 tl2 n1 (n2 + 1) (acc + slog)
+                let term = new long_number(true, [for i in [1 .. n1 + n2] -> 0] @ (new long_number((int64 hd1) * (int64 hd2))).number)
+                mult list1 tl2 n1 (n2 + 1) (acc + term)
         new long_number(a.sign = b.sign, (mult a.number b.number 0 0 (new long_number())).number) 
 
     static member (*) (a : long_number, b) = a * (new long_number(string b))
@@ -206,24 +210,25 @@ let test1 = long_number.factorial(100) * long_number.factorial(100) (* Посч�
 test1.print
 let test2 = new long_number("100000000000000000000000000000000000") - new long_number("12345689876532")
 test2.print
+printfn ""
 
-let a = new long_number("2")
-let b = new long_number("1")
+let a = new long_number("1000000000")
+let b = new long_number("2000000000")
 
-(* Тест правельного выбора операции *)
-(a + b).print
-(a + -b).print
-(-a + b).print
-(-a + -b).print
-(a - b).print
-(a - -b).print
-(-a - b).print
-(-a - -b).print
-(a + 1).print
-(a + -1).print
-(-a + 1).print
-(-a + -1).print
-(a - 1).print
-(a - -1).print
-(-a - 1).print
-(-a - -1).print
+(* Тест правильного выбора операции *)
+printfn "%A"((a + b) = new long_number("3000000000"))
+printfn "%A" ((a + -b) = new long_number("-1000000000"))
+printfn "%A"((-a + b) = new long_number("1000000000"))
+printfn "%A" ((-a + -b) = new long_number("-3000000000"))
+printfn "%A" ((a - b) = new long_number("-1000000000"))
+printfn "%A" ((a - -b) = new long_number("3000000000"))
+printfn "%A" ((-a - b) = new long_number("-3000000000"))
+printfn "%A" ((-a - -b) = new long_number("1000000000"))
+printfn "%A"((a + 2000000000) = new long_number("3000000000"))
+printfn "%A" ((a + -2000000000) = new long_number("-1000000000"))
+printfn "%A"((-a + 2000000000) = new long_number("1000000000"))
+printfn "%A" ((-a + -2000000000) = new long_number("-3000000000"))
+printfn "%A" ((a - 2000000000) = new long_number("-1000000000"))
+printfn "%A" ((a - -2000000000) = new long_number("3000000000"))
+printfn "%A" ((-a - 2000000000) = new long_number("-3000000000"))
+printfn "%A" ((-a - -2000000000) = new long_number("1000000000"))
