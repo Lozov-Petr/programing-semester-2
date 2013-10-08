@@ -1,7 +1,7 @@
-﻿ (******************************
+ (******************************
            Лозов Пётр
            Группа 171
-            10.05.13
+            20.05.13
          long arithmetic
  *******************************)
 
@@ -39,9 +39,11 @@ type long_number =
         }
 
     new(a : int) =
+        let sign' = a >= 0
+        let a = abs a
         let a' = a / long_number.max_digit
         {
-            sign = a >= 0
+            sign = sign'
             number = (a % long_number.max_digit) :: (if a' <> 0 then [a'] else [])
         }
 
@@ -66,9 +68,11 @@ type long_number =
         print (List.rev this.number) true
         printfn ""
 
-    static member (+) (a : int, b : long_number) = b + a
+    static member (~-) (a : long_number) = new long_number(a.sign = false, a.number)
 
-    static member (+) (a : long_number, b : int) =
+    member this.abs = new long_number(true, this.number)
+
+    static member private add (a : long_number, b : int) =
         let rec add list carry acc =
             if carry <> 0 then
                 match list with
@@ -77,9 +81,35 @@ type long_number =
                     let new_hd = hd + carry
                     add tl (new_hd / long_number.max_digit) ((new_hd % long_number.max_digit) :: acc)
             else (List.rev acc) @ list
-        if a.sign = (b >= 0) then new long_number(a.sign, add a.number (abs b) []) else a - (-b)
+        new long_number(a.sign, add a.number (abs b) [])
+    
+    static member private sub(a : long_number, b : int) =
+        let rec sub list carry acc =
+            let rec plus_max_digit n i = if n >=0 then (n, i) else plus_max_digit (n + long_number.max_digit) (i + 1)
+            if carry <> 0 then
+                match list with
+                | [] -> List.rev (long_number.del_zeros(acc))
+                | hd :: tl ->
+                    let (new_hd, i) = plus_max_digit (hd - carry) 0
+                    sub tl i (new_hd :: acc)
+            else (List.rev (long_number.del_zeros(acc))) @ list
+        new long_number(a.sign, sub a.number (abs b) [])
 
-    static member (+) (a : long_number, b : long_number) =
+    static member (+) (a : int, b : long_number) = b + a
+
+    static member (-) (a : int, b : long_number) = -(b - a)
+        
+    static member (+) (a : long_number, b : int) =
+        if a.sign = (b >= 0) then long_number.add(a, b) 
+        else if a.abs >= (new long_number(b)).abs then long_number.sub(a, -b) else -long_number.sub(new long_number(-b), a)
+
+
+    static member (-) (a : long_number, b : int) =
+        if a.sign = (b >= 0) then 
+            if a >= new long_number(b) then long_number.sub(a, b) else -long_number.sub(new long_number(b), a)
+        else long_number.add(a, -b)
+   
+    static member private add (a : long_number, b : long_number) =
         let rec add list1 list2 carry acc =
             match list1, list2 with
             | [], [] -> List.rev (if carry = 0 then acc else carry :: acc)
@@ -88,11 +118,38 @@ type long_number =
             | hd1 :: tl1, hd2 :: tl2 ->
                  let new_hd = hd1 + hd2 + carry
                  add tl1 tl2 (new_hd / long_number.max_digit) ((new_hd % long_number.max_digit) :: acc)
-        if a.sign = b.sign then new long_number(a.sign, add a.number b.number 0 []) else a //- b
+        new long_number(a.sign, add a.number b.number 0 [])
 
-    static member (~-) (a : long_number) = new long_number(a.sign = false, a.number)
+    static member private sub (a : long_number, b : long_number) =
+        let rec plus_max_digit n i = if n >= 0 then (n, i) else plus_max_digit (n + long_number.max_digit) (i + 1)
+        let rec sub list1 list2 (carry : int) acc =
+            match list1, list2 with
+            | [], [] -> List.rev (long_number.del_zeros(acc))
+            | list, [] -> 
+                let tl = (new long_number(true, list) - carry).number
+                let tl = if tl = [0] then [] else tl
+                (List.rev acc) @ tl
+            | hd1 :: tl1, hd2 :: tl2 -> 
+                let (new_hd, i) = plus_max_digit (hd1 - hd2 - carry) 0
+                sub tl1 tl2 i (new_hd :: acc)
+            | _ -> []
+        new long_number(a.sign, sub a.number b.number 0 [])
 
-    member this.abs = new long_number(true, this.number)
+    static member (+) (a : long_number, b : long_number) =
+        if a.sign = b.sign then long_number.add(a, b) 
+        else
+            if a.abs > b.abs then
+                long_number.sub(a, -b)
+            else
+                -long_number.sub(-b, a)
+
+    static member (-) (a : long_number, b : long_number) =
+        if a.sign = b.sign then
+            if a.abs > b.abs then
+                long_number.sub(a, b)
+            else
+                -long_number.sub(b, a)
+        else long_number.add(a, -b)
 
     static member private del_zeros(a : int list) = 
         let rec del_zeros list =
@@ -131,50 +188,14 @@ type long_number =
     override this.GetHashCode() = this.ToString().GetHashCode()
     override this.Equals(num) = long_number.compare_to_obj(this, num) = 0
 
-    static member (-) (a : long_number, b : int) =
-        let rec sub list carry acc =
-            let rec plus_max_digit n i = if n >=0 then (n, i) else plus_max_digit (n + long_number.max_digit) (i + 1)
-            if carry <> 0 then
-                match list with
-                | [] -> List.rev (long_number.del_zeros(acc))
-                | hd :: tl ->
-                    let (new_hd, i) = plus_max_digit (hd - carry) 0
-                    sub tl i (new_hd :: acc)
-            else (List.rev (long_number.del_zeros(acc))) @ list
-        if a.sign = (b >= 0) then 
-            if a >= new long_number(b) then new long_number(a.sign, (sub a.number b [])) else -(new long_number(b) - a)
-        else a + (-b)
-
-    static member (-) (a : int, b : long_number) = -(b - a)
-
-    static member (-) (a : long_number, b : long_number) =
-        let rec plus_max_digit n i = if n >= 0 then (n, i) else plus_max_digit (n + long_number.max_digit) (i + 1)
-        let rec sub list1 list2 (carry : int) acc =
-            match list1, list2 with
-            | [], [] -> List.rev (long_number.del_zeros(acc))
-            | list, [] -> 
-                let tl = (new long_number(true, list) - carry).number
-                let tl = if tl = [0] then [] else tl
-                (List.rev acc) @ tl
-            | hd1 :: tl1, hd2 :: tl2 -> 
-                let (new_hd, i) = plus_max_digit (hd1 - hd2 - carry) 0
-                sub tl1 tl2 i (new_hd :: acc)
-            | _ -> []
-        if a.sign = b.sign then
-            if a.abs > b.abs then
-                new long_number(a.sign, sub a.number b.number 0 [])
-            else
-                new long_number(a.sign = false, sub a.number b.number 0 [])
-        else a + (-b)
-
     static member (*) (a : long_number, b : long_number) =
         let rec mult list1 list2 n1 n2 acc =
             match list1, list2 with
             | [], _ -> acc
             | _ :: tl, [] -> mult tl b.number (n1 + 1) 0 acc
             | hd1 :: tl1, hd2 :: tl2 -> 
-                let slog = new long_number(true, [for i in [1 .. n1 + n2] -> 0] @ (new long_number((int64 hd1) * (int64 hd2))).number)
-                mult list1 tl2 n1 (n2 + 1) (acc + slog)
+                let term = new long_number(true, [for i in [1 .. n1 + n2] -> 0] @ (new long_number((int64 hd1) * (int64 hd2))).number)
+                mult list1 tl2 n1 (n2 + 1) (acc + term)
         new long_number(a.sign = b.sign, (mult a.number b.number 0 0 (new long_number())).number) 
 
     static member (*) (a : long_number, b) = a * (new long_number(string b))
@@ -189,3 +210,25 @@ let test1 = long_number.factorial(100) * long_number.factorial(100) (* Посч�
 test1.print
 let test2 = new long_number("100000000000000000000000000000000000") - new long_number("12345689876532")
 test2.print
+printfn ""
+
+let a = new long_number("1000000000")
+let b = new long_number("2000000000")
+
+(* Тест правильного выбора операции *)
+printfn "%A"((a + b) = new long_number("3000000000"))
+printfn "%A" ((a + -b) = new long_number("-1000000000"))
+printfn "%A"((-a + b) = new long_number("1000000000"))
+printfn "%A" ((-a + -b) = new long_number("-3000000000"))
+printfn "%A" ((a - b) = new long_number("-1000000000"))
+printfn "%A" ((a - -b) = new long_number("3000000000"))
+printfn "%A" ((-a - b) = new long_number("-3000000000"))
+printfn "%A" ((-a - -b) = new long_number("1000000000"))
+printfn "%A"((a + 2000000000) = new long_number("3000000000"))
+printfn "%A" ((a + -2000000000) = new long_number("-1000000000"))
+printfn "%A"((-a + 2000000000) = new long_number("1000000000"))
+printfn "%A" ((-a + -2000000000) = new long_number("-3000000000"))
+printfn "%A" ((a - 2000000000) = new long_number("-1000000000"))
+printfn "%A" ((a - -2000000000) = new long_number("3000000000"))
+printfn "%A" ((-a - 2000000000) = new long_number("-3000000000"))
+printfn "%A" ((-a - -2000000000) = new long_number("1000000000"))
